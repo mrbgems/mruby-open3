@@ -1,19 +1,25 @@
 # mruby-open3
 
-Ruby's open3 for mruby
+Open3 for mruby
 
-## install by mrbgems
-
-- add conf.gem line to `build_config.rb`
+## Installation
 
 ```ruby
 MRuby::Build.new do |conf|
-  # ... (snip) ...
-
+  # ...
   conf.gem github: 'k0kubun/mruby-open3'
 end
 ```
 
+## Usage
+
+Currently only `Open3.capture3` is supported.
+
+```rb
+Open3.capture3("ruby", "-e", "$stdout.puts 'out'; $stderr.puts 'err'; exit 2")
+#=> ["out\n", "err\n", #<Process::Status: pid=3903,exited(2)>]
+```
+
 ## License
 
-under the MIT License
+MIT License
