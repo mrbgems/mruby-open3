@@ -6,8 +6,9 @@
 ** See Copyright Notice in LICENSE
 */
 
+#include <unistd.h>
 #include "mruby.h"
-#include "mruby/data.h"
+#include "mruby/value.h"
 #include "mrb_open3.h"
 
 #define DONE mrb_gc_arena_restore(mrb, 0);
@@ -16,15 +17,23 @@
 // to `Process` by "mruby-process" mrbgem.
 static mrb_value mrb_open3_spawn(mrb_state *mrb, mrb_value self)
 {
-  return mrb_str_new_cstr(mrb, "spawn!");
+  mrb_value *argv;
+  mrb_int argc;
+  mrb_get_args(mrb, "*", &argv, &argc);
+
+  pid_t pid = fork();
+  if (pid == 0) {
+    execlp("echo", "echo", "hello world", NULL);
+  }
+  return mrb_fixnum_value(pid);
 }
 
 void mrb_mruby_open3_gem_init(mrb_state *mrb)
 {
   struct RClass *open3;
   open3 = mrb_define_module(mrb, "Open3");
-  mrb_define_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_NONE());
-  mrb_define_class_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_NONE());
+  mrb_define_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_ANY());
+  mrb_define_class_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_ANY());
   DONE;
 }
 
