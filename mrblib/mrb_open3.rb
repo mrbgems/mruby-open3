@@ -1,5 +1,5 @@
-class Open3
-  def bye
-    self.hello + " bye"
+module Open3
+  def self.bye
+    hi + " bye"
   end
 end
