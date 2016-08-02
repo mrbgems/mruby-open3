@@ -9,8 +9,14 @@ module Open3
     out_w.close
     err_w.close
 
-    stdout = out_r.read
-    stderr = err_r.read
+    stdout = ''
+    stderr = ''
+
+    out_reader = Thread.new(out_r.to_i, stdout) { |io, result| result << IO.new(io).read }
+    err_reader = Thread.new(err_r.to_i, stderr) { |io, result| result << IO.new(io).read }
+
+    out_reader.join
+    err_reader.join
 
     _, status = Process.waitpid2(pid)
     [stdout, stderr, status]
