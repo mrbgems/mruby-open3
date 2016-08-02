@@ -1,5 +1,6 @@
 module Open3
-  def self.bye
-    hi + " bye"
+  def capture3
+    spawn + "bye"
   end
+  module_function :capture3
 end
