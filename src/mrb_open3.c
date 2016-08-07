@@ -6,6 +6,7 @@
 ** See Copyright Notice in LICENSE
 */
 
+#include <signal.h>
 #include <unistd.h>
 #include "mruby.h"
 #include "mruby/hash.h"
@@ -71,6 +72,10 @@ mrb_mruby_open3_gem_init(mrb_state *mrb)
   open3 = mrb_define_module(mrb, "Open3");
   mrb_define_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_ANY());
   mrb_define_class_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_ANY());
+
+  // Ignore SIGPIPE
+  signal(SIGPIPE, SIG_IGN);
+
   DONE;
 }
 
