@@ -12,8 +12,8 @@ module Open3
     stdout = ''
     stderr = ''
 
-    out_reader = Thread.new(out_r.to_i, stdout) { |fd, result| io = IO.new(fd); result << io.read; io.close }
-    err_reader = Thread.new(err_r.to_i, stderr) { |fd, result| io = IO.new(fd); result << io.read; io.close }
+    out_reader = Thread.new(out_r.to_i, stdout) { |fd, result| io = IO.new(fd); result << io.read; io.close unless io.closed? }
+    err_reader = Thread.new(err_r.to_i, stderr) { |fd, result| io = IO.new(fd); result << io.read; io.close unless io.closed? }
 
     out_reader.join
     err_reader.join
