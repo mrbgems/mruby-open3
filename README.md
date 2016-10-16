@@ -2,12 +2,15 @@
 
 Open3 for mruby
 
+**NOTE: Currently this mgem works only with [k0kubun/mruby-io](https://github.com/k0kubun/mruby-io)**
+
 ## Installation
 
 ```ruby
 MRuby::Build.new do |conf|
   # ...
   conf.gem github: 'k0kubun/mruby-open3'
+  conf.gem github: 'k0kubun/mruby-io'
 end
 ```
 
