@@ -11,12 +11,25 @@ module Open3
 
     stdout = ''
     stderr = ''
+    output = { out_r => stdout, err_r => stderr }
 
-    out_reader = Thread.new(out_r.to_i, stdout) { |fd, result| io = IO.new(fd); result << io.read; io.close unless io.closed? }
-    err_reader = Thread.new(err_r.to_i, stderr) { |fd, result| io = IO.new(fd); result << io.read; io.close unless io.closed? }
-
-    out_reader.join
-    err_reader.join
+    remaining_ios = [out_r, err_r]
+    until remaining_ios.empty?
+      readable_ios, = IO.select(remaining_ios)
+      readable_ios.each do |io|
+        begin
+          loop do
+            begin
+              output[io] << io.read_nonblock
+            rescue Errno::EAGAIN
+              break
+            end
+          end
+        #rescue EOFError
+        #  remaining_ios.delete(io)
+        end
+      end
+    end
 
     _, status = Process.waitpid2(pid)
     [stdout, stderr, status]
