@@ -30,6 +30,7 @@ module Open3
             end
           end
         rescue EOFError
+          io.close unless io.closed?
           remaining_ios.delete(io)
         end
       end
