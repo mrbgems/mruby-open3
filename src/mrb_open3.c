@@ -25,15 +25,15 @@ open3_spawn_process_options(mrb_state *mrb, mrb_value options, mrb_int *out_dst,
   *err_dst = mrb_int(mrb, err_value);
 }
 
-static const char**
+static char **
 mrb_str_buf_to_cstr_buf(mrb_state *mrb, mrb_value *strs, mrb_int num)
 {
-  const char **ret;
+  char **ret;
   mrb_int i;
 
-  ret = (const char **)mrb_malloc(mrb, sizeof(char *) * (num+1));
+  ret = (char **)mrb_malloc(mrb, sizeof(char *) * (num+1));
   for (i = 0; i < num; i++) {
-    ret[i] = mrb_string_value_ptr(mrb, strs[i]);
+    ret[i] = mrb_str_to_cstr(mrb, strs[i]);
   }
   ret[num] = NULL;
   return ret;
@@ -46,7 +46,7 @@ mrb_str_buf_to_cstr_buf(mrb_state *mrb, mrb_value *strs, mrb_int num)
 static mrb_value
 mrb_open3_spawn(mrb_state *mrb, mrb_value self)
 {
-  const char **cmd;
+  char **cmd;
   pid_t pid;
   mrb_value *argv;
   mrb_int argc, out_dst, err_dst;
