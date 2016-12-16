@@ -4,7 +4,7 @@ module Open3
   def capture3(*cmd)
     out_r, out_w = IO.pipe
     err_r, err_w = IO.pipe
-    pid = spawn(*cmd, { 'out' => out_w.to_i, 'err' => err_w.to_i })
+    pid = spawn(*cmd, out: out_w.to_i, err: err_w.to_i)
 
     out_w.close
     err_w.close
