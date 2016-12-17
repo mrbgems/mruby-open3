@@ -19,17 +19,18 @@ module Open3
     stderr = ''
 
     remaining_ios = [out_r, err_r]
+    buf = ''
     until remaining_ios.empty?
       readable_ios, = IO.select(remaining_ios)
       readable_ios.each do |io|
         begin
           loop do
             begin
-              out = io.read_nonblock
+              io.sysread(1024, buf)
               if io == out_r
-                stdout << out
+                stdout << buf
               else
-                stderr << out
+                stderr << buf
               end
             rescue Errno::EAGAIN
               break
