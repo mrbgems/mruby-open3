@@ -7,8 +7,7 @@ Open3 for mruby
 ```ruby
 MRuby::Build.new do |conf|
   # ...
-  conf.gem github: 'k0kubun/mruby-open3'
-  conf.gem github: 'iij/mruby-io'
+  conf.gem mgem: 'mruby-open3'
 end
 ```
 
