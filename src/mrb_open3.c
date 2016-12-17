@@ -14,15 +14,25 @@
 
 #define DONE mrb_gc_arena_restore(mrb, 0);
 
-static void
-open3_spawn_process_options(mrb_state *mrb, mrb_value options, mrb_int *out_dst, mrb_int *err_dst)
-{
-  mrb_value out_value, err_value;
+struct spawn_options {
+  mrb_int out_dst;
+  mrb_int err_dst;
+  char *chdir;
+};
 
-  out_value = mrb_hash_get(mrb, options, mrb_symbol_value(mrb_intern_lit(mrb, "out")));
-  err_value = mrb_hash_get(mrb, options, mrb_symbol_value(mrb_intern_lit(mrb, "err")));
-  *out_dst = mrb_int(mrb, out_value);
-  *err_dst = mrb_int(mrb, err_value);
+static void
+open3_spawn_process_options(mrb_state *mrb, mrb_value options_value, struct spawn_options *options)
+{
+  mrb_value out_value, err_value, chdir_value;
+
+  out_value = mrb_hash_get(mrb, options_value, mrb_symbol_value(mrb_intern_lit(mrb, "out")));
+  err_value = mrb_hash_get(mrb, options_value, mrb_symbol_value(mrb_intern_lit(mrb, "err")));
+  chdir_value = mrb_hash_get(mrb, options_value, mrb_symbol_value(mrb_intern_lit(mrb, "chdir")));
+  options->out_dst = mrb_int(mrb, out_value);
+  options->err_dst = mrb_int(mrb, err_value);
+  if (!mrb_nil_p(chdir_value)) {
+    options->chdir = mrb_str_to_cstr(mrb, chdir_value);
+  }
 }
 
 static char **
@@ -49,19 +59,24 @@ mrb_open3_spawn(mrb_state *mrb, mrb_value self)
   char **cmd;
   pid_t pid;
   mrb_value *argv;
-  mrb_int argc, out_dst, err_dst;
+  mrb_int argc;
+  struct spawn_options options;
+
   mrb_get_args(mrb, "*", &argv, &argc);
   if (argc == 0) {
     mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong number of arguments (given 0, expected 1+)");
   }
 
   cmd = mrb_str_buf_to_cstr_buf(mrb, argv, argc-1);
-  open3_spawn_process_options(mrb, argv[argc-1], &out_dst, &err_dst);
+  open3_spawn_process_options(mrb, argv[argc-1], &options);
 
   pid = fork();
   if (pid == 0) {
-    dup2(out_dst, STDOUT_FILENO);
-    dup2(err_dst, STDERR_FILENO);
+    dup2(options.out_dst, STDOUT_FILENO);
+    dup2(options.err_dst, STDERR_FILENO);
+    if (options.chdir != NULL) {
+      chdir(options.chdir);
+    }
     execvp(cmd[0], cmd);
   }
   return mrb_fixnum_value(pid);
