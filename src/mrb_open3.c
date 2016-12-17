@@ -19,8 +19,8 @@ open3_spawn_process_options(mrb_state *mrb, mrb_value options, mrb_int *out_dst,
 {
   mrb_value out_value, err_value;
 
-  out_value = mrb_hash_get(mrb, options, mrb_str_new_cstr(mrb, "out"));
-  err_value = mrb_hash_get(mrb, options, mrb_str_new_cstr(mrb, "err"));
+  out_value = mrb_hash_get(mrb, options, mrb_symbol_value(mrb_intern_lit(mrb, "out")));
+  err_value = mrb_hash_get(mrb, options, mrb_symbol_value(mrb_intern_lit(mrb, "err")));
   *out_dst = mrb_int(mrb, out_value);
   *err_dst = mrb_int(mrb, err_value);
 }
@@ -42,7 +42,7 @@ mrb_str_buf_to_cstr_buf(mrb_state *mrb, mrb_value *strs, mrb_int num)
 // `spawn` is defined under `Open3` since it's incomplete and it should be added
 // to `Process` by "mruby-process" mrbgem.
 //
-// Limitation: Currently it expects the last argument to be a Hash like `{ "out"=>..., "err"=>... }`.
+// Limitation: Currently it expects the last argument to be a Hash like `{ out: ..., err: ... }`.
 static mrb_value
 mrb_open3_spawn(mrb_state *mrb, mrb_value self)
 {
