@@ -51,6 +51,9 @@ mrb_open3_spawn(mrb_state *mrb, mrb_value self)
   mrb_value *argv;
   mrb_int argc, out_dst, err_dst;
   mrb_get_args(mrb, "*", &argv, &argc);
+  if (argc == 0) {
+    mrb_raise(mrb, E_ARGUMENT_ERROR, "wrong number of arguments (given 0, expected 1+)");
+  }
 
   cmd = mrb_str_buf_to_cstr_buf(mrb, argv, argc-1);
   open3_spawn_process_options(mrb, argv[argc-1], &out_dst, &err_dst);
@@ -69,8 +72,8 @@ mrb_mruby_open3_gem_init(mrb_state *mrb)
 {
   struct RClass *open3;
   open3 = mrb_define_module(mrb, "Open3");
-  mrb_define_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_ANY());
-  mrb_define_class_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_ANY());
+  mrb_define_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_REQ(1) | MRB_ARGS_REST());
+  mrb_define_class_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_REQ(1) | MRB_ARGS_REST());
   DONE;
 }
 
