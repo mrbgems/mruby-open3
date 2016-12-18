@@ -32,6 +32,8 @@ open3_spawn_process_options(mrb_state *mrb, mrb_value options_value, struct spaw
   options->err_dst = mrb_int(mrb, err_value);
   if (!mrb_nil_p(chdir_value)) {
     options->chdir = mrb_str_to_cstr(mrb, chdir_value);
+  } else {
+    options->chdir = NULL;
   }
 }
 
