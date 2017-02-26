@@ -24,17 +24,11 @@ module Open3
       readable_ios, = IO.select(remaining_ios)
       readable_ios.each do |io|
         begin
-          loop do
-            begin
-              io.sysread(1024, buf)
-              if io == out_r
-                stdout << buf
-              else
-                stderr << buf
-              end
-            rescue Errno::EAGAIN
-              break
-            end
+          io.sysread(1024, buf)
+          if io == out_r
+            stdout << buf
+          else
+            stderr << buf
           end
         rescue EOFError
           io.close unless io.closed?
