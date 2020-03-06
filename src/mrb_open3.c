@@ -51,6 +51,7 @@ mrb_str_buf_to_cstr_buf(mrb_state *mrb, mrb_value *strs, mrb_int num)
   return ret;
 }
 
+#ifndef _WIN32
 // `spawn` is defined under `Open3` since it's incomplete and it should be added
 // to `Process` by "mruby-process" mrbgem.
 //
@@ -83,14 +84,17 @@ mrb_open3_spawn(mrb_state *mrb, mrb_value self)
   }
   return mrb_fixnum_value(pid);
 }
+#endif
 
 void
 mrb_mruby_open3_gem_init(mrb_state *mrb)
 {
   struct RClass *open3;
   open3 = mrb_define_module(mrb, "Open3");
+#ifndef _WIN32
   mrb_define_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_REQ(1) | MRB_ARGS_REST());
   mrb_define_class_method(mrb, open3, "spawn", mrb_open3_spawn, MRB_ARGS_REQ(1) | MRB_ARGS_REST());
+#endif
   DONE;
 }
 

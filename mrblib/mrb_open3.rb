@@ -2,6 +2,16 @@ module Open3
   # @param [Array<String>] - command to execute
   # @return [String, String, Process::Status] - stdout, stderr, status
   def capture3(*cmd)
+    # Windows
+    unless respond_to?(:spawn)
+      err_path = "/tmp/mruby-open3-#{Process.pid}"
+      out = IO.popen("#{['sh', '-c', cmd.shelljoin].shelljoin} 2> #{err_path.shellescape}", &:read)
+      status = Process::Status.new($?.pid, $?.to_i)
+      err = IO.read(err_path)
+      File.unlink(err_path) rescue nil
+      return [out, err, status]
+    end
+
     opts = {}
     if cmd.last.is_a?(Hash)
       opts = cmd.pop.dup
