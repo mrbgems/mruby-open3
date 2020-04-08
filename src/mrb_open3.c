@@ -6,6 +6,9 @@
 ** See Copyright Notice in LICENSE
 */
 
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include "mruby.h"
 #include "mruby/hash.h"
@@ -80,6 +83,10 @@ mrb_open3_spawn(mrb_state *mrb, mrb_value self)
       chdir(options.chdir);
     }
     execvp(cmd[0], cmd);
+
+    // execvp does not return on success.
+    fprintf(stderr, "execvp(%s): %s", cmd[0], strerror(errno));
+    _exit(EXIT_FAILURE);
   }
   return mrb_fixnum_value(pid);
 }
