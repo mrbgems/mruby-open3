@@ -1,5 +1,14 @@
 module Open3
   # @param [Array<String>] - command to execute
+  # @return [String, String, Process::Status] - stdout, status
+  def capture2(*cmd)
+    stdout, stderr, status = capture3(*cmd)
+    $stderr.print(stderr)
+    [stdout, status]
+  end
+  module_function :capture2
+
+  # @param [Array<String>] - command to execute
   # @return [String, String, Process::Status] - stdout, stderr, status
   def capture3(*cmd)
     opts = {}
