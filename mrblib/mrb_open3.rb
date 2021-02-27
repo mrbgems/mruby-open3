@@ -1,5 +1,50 @@
 module Open3
   # @param [Array<String>] - command to execute
+  # @return [String, String, Process::Status] - stdout, status
+  def capture2(*cmd)
+    stdout, stderr, status = capture3(*cmd)
+    $stderr.print(stderr)
+    [stdout, status]
+  end
+  module_function :capture2
+
+  # @param [Array<String>] - command to execute
+  # @return [String, String, Process::Status] - stdout_and_stderr_str, status
+  def capture2e(*cmd)
+    opts = {}
+    if cmd.last.is_a?(Hash)
+      opts = cmd.pop.dup
+    end
+    out_r, out_w = IO.pipe
+    opts[:out] = out_w.to_i
+    opts[:err] = out_w.to_i
+    pid = spawn(*cmd, opts)
+
+    out_w.close
+
+    stdout_and_stderr_str = ''
+
+    remaining_ios = [out_r]
+    buf = ''
+    until remaining_ios.empty?
+      readable_ios, = IO.select(remaining_ios)
+      readable_ios.each do |io|
+        begin
+          io.sysread(1024, buf)
+          stdout_and_stderr_str << buf
+        rescue EOFError
+          io.close unless io.closed?
+          remaining_ios.delete(io)
+        end
+      end
+    end
+
+    _, status = Process.waitpid2(pid)
+    [stdout_and_stderr_str, status]
+  end
+  module_function :capture2e
+
+  # @param [Array<String>] - command to execute
   # @return [String, String, Process::Status] - stdout, stderr, status
   def capture3(*cmd)
     opts = {}
