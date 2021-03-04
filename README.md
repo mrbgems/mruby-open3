@@ -1,4 +1,4 @@
-# mruby-open3 [![Build Status](https://travis-ci.org/k0kubun/mruby-open3.svg?branch=master)](https://travis-ci.org/k0kubun/mruby-open3)
+# mruby-open3 [![Build Status](https://travis-ci.org/mrbgems/mruby-open3.svg?branch=master)](https://travis-ci.org/mrbgems/mruby-open3)
 
 Open3 for mruby
 
